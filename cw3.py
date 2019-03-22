@@ -16,11 +16,19 @@
 import gtexttospeech, gspeechtotext, audio, aaudio, asensehat
 import sense_hat
 import os, time, re, signal
+from chatterbot import ChatBot
+from chatterbot.trainers import ChatterBotCorpusTrainer
 
 #
 # USER LOGIC
 #
+chatbot = ChatBot('Ron Obvious')
 
+# Create a new trainer for the chatbot
+trainer = ChatterBotCorpusTrainer(chatbot)
+
+# Train the chatbot based on the english corpus
+trainer.train("chatterbot.corpus.english")
 #
 # SENSE HAT BUTTON EVENT HANDLER
 #
@@ -161,6 +169,7 @@ colour["violet"] = [159, 000, 255]
 colour["purple"] = colour["violet"]
 colour["black"]  = [000, 000, 000]
 
+prev_reply = ""
 #
 # DEFAULT INTERNAL SETTINGS
 #
@@ -204,12 +213,12 @@ def action_parser(transcript) :
     global __return
     global __adisab
     global __vdisab
-
+    global prev_reply
     vtext = None
     dtext = None
     aresp = None
     vresp = None
-
+    '''
     if re.search("What|Show|Tell|Know|Display", transcript, re.I) :
         if re.search(r'\b(temperature)\b', transcript, re.I) :
             _ = round(__senhat.get_temperature(), 1)
@@ -261,7 +270,7 @@ def action_parser(transcript) :
 
                 __dcolor = colour[colour_i]
                 dtext = colour_i.title()
-
+        '''
         # if re.search(r'\b(red)\b', transcript, re.I) :
         #     vtext = "Changing text colour to red"
 
@@ -291,7 +300,7 @@ def action_parser(transcript) :
 
         #     __dcolor = colour["violet"]
         #     dtext = "Violet"
-
+    '''
     if re.search("Reset|Rejuvenate|Clear|Forget", transcript, re.I) :
         vtext = "Clearing Device Settings"
 
@@ -299,15 +308,17 @@ def action_parser(transcript) :
         __tcscal = not False
         __vdisab = False
         __adisab = False
-
+    '''
     # if re.search("Hello|Hallo|Hi|Hey", transcript, re.I) :
     #     vtext = "Hello"
-
+    vtext=str(chatbot.get_response(transcript))
+    print(vtext)
     if dtext is None :
         vresp = vtext
     else :
         vresp = dtext
-
+    
+    
     if vtext is not None :
         aresp = gtexttospeech.gtexttospeech(vtext)
 
@@ -485,16 +496,11 @@ while True :
     print("User Command:", transcript)
 
     if transcript is not None :
+        #(aresp, cresp, vresp) = action_parser(transcript)
         (aresp, cresp, vresp) = action_parser(transcript)
-
+        
         if cresp is not None and type(cresp) is str :
             print("Response:", cresp)
-
-        if vresp is not None and type(vresp) is str :
-            asensehat.display_sync((vresp, __dcolor))
-        elif vresp is not None :
-            asensehat.display_async(vresp)
-
         if aresp is not None :
             # Submit system response to Google Text to Speech for synthesising
             #  verbal production.
@@ -503,6 +509,12 @@ while True :
             #  24 kHz.
             #
             audio.stream_audio(aresp, 24000)
+        if vresp is not None and type(vresp) is str :
+            asensehat.display_sync((vresp, __dcolor))
+        elif vresp is not None :
+            asensehat.display_async(vresp)
+
+
 
     # Audio Stream-Served Indicator, flipped by the main thread when the audio
     #  stream is consumed. If a stream is consumed or at cold start which no
