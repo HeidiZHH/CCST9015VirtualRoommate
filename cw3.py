@@ -509,11 +509,12 @@ while True :
             #  24 kHz.
             #
             audio.stream_audio(aresp, 24000)
+        '''
         if vresp is not None and type(vresp) is str :
             asensehat.display_sync((vresp, __dcolor))
         elif vresp is not None :
             asensehat.display_async(vresp)
-
+        '''
 
 
     # Audio Stream-Served Indicator, flipped by the main thread when the audio

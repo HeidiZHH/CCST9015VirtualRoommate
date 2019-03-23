@@ -17,6 +17,7 @@ class MessageCounter(telepot.helper.ChatHandler):
 
     def on_chat_message(self, msg): #msg["text"]
 	global prev_reply
+        reply = ""
         self._count += 1
         print(msg["text"])
         #print("Input your reply:")
@@ -30,6 +31,8 @@ class MessageCounter(telepot.helper.ChatHandler):
         reply = f.readline()
         while(reply == prev_reply):
              reply=f.readline()
+        if(reply==""):
+            reply="It is good to talk with you"
         print(reply)
         prev_reply = reply
         self.sender.sendMessage(reply)
@@ -47,4 +50,4 @@ MessageLoop(bot).run_as_thread()
 print('Listening ...')
 
 while 1:
-    time.sleep(10)
+    pass
