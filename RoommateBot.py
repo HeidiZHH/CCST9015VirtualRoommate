@@ -39,7 +39,7 @@ class MessageCounter(telepot.helper.ChatHandler):
         f.close()
         print("Ready for next sentence")
 
-TOKEN = '886340723:AAGsosJOvz0HQf4g9gDEFtFHXosZnqrByNQ' # get token from command-line
+TOKEN =  # get token from command-line
 
 bot = telepot.DelegatorBot(TOKEN, [
     pave_event_space()(
